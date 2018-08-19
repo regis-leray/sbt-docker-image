@@ -22,7 +22,7 @@ lazy val root = project.in(file("."))
   .enablePlugins(DockerPlugin)
 ```
 
-> Don't forget to export your `DOCKER_ID_USER` as environment variable, do be able to build and push docker image
+> Don't forget to export your `DOCKER_ID_USER` as environment variable, to be able to build and push docker image
 > You can override `dockerIdUserName` to provide it
 > 
 > https://docs.docker.com/docker-cloud/builds/push-images/
@@ -49,7 +49,7 @@ lazy val root = project.in(file("."))
       //provide build OPTIONS :: default `Nil`
       dockerBuildOptions := Seq("--no-cache"),
       //default location of dockerfile :: default `baseDirectory`
-      dockerContextPath := baseDirectory.value.asPath,
+      dockerContextPath := baseDirectory.value.asPath.resolve("docker-dir"),
       //default name of dockerfile :: default `Dockerfile`
       dockerfileName := "Dockerfile-custom"
    )
