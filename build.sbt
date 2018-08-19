@@ -48,6 +48,7 @@ lazy val `sbt-docker` = project
         releaseStepCommandAndRemaining("publishSigned"),
         setNextVersion,
         commitNextVersion,
+        releaseStepCommand("sonatypeReleaseAll"),
         pushChanges
     ),
 
