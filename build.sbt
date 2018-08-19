@@ -11,6 +11,7 @@ lazy val `sbt-docker` = project
     name := "sbt-docker",
     description := "sbt docker file plugin",
     sbtPlugin := true,
+    crossSbtVersions := Vector("0.13.17", "1.1.6"),
 
     homepage := Some(url("https://github.com/regis-leray/sbt-docker")),
     scmInfo := Some(ScmInfo(url("https://github.com/regis-leray/sbt-docker"), "git@github.com:regis-leray/sbt-docker.git")),
@@ -27,6 +28,11 @@ lazy val `sbt-docker` = project
     javacOptions in(Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8"),
     javacOptions in(Compile, doc) := Seq("-source", "1.8"),
 
+    scalaCompilerBridgeSource := {
+      val sv = appConfiguration.value.provider.id.version
+      ("org.scala-sbt" % "compiler-interface" % sv % "component").sources
+    },
+
     publishTo := {
       if (isSnapshot.value)
         Some(Opts.resolver.sonatypeSnapshots)
@@ -40,15 +46,15 @@ lazy val `sbt-docker` = project
         checkSnapshotDependencies,
         inquireVersions,
         runClean,
-        releaseStepCommandAndRemaining("test"),
-        releaseStepCommandAndRemaining("scripted"),
+        releaseStepCommandAndRemaining("^ test"),
+        releaseStepCommandAndRemaining("^ scripted"),
         setReleaseVersion,
         commitReleaseVersion,
         tagRelease,
-        releaseStepCommandAndRemaining("publishSigned"),
+        releaseStepCommandAndRemaining("^ publishSigned"),
         setNextVersion,
         commitNextVersion,
-        releaseStepCommand("sonatypeReleaseAll"),
+        releaseStepCommand("^ sonatypeReleaseAll"),
         pushChanges
     ),
 
