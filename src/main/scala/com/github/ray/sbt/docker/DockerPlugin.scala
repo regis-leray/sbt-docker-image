@@ -2,12 +2,14 @@ package com.github.ray.sbt.docker
 
 import java.nio.file.{Files, Path}
 
-import ProcessBuilderOps._
 import sbt.Keys._
 import sbt.{Def, _}
+
 import scala.sys.process.Process
+import ProcessBuilderOps._
 
 object DockerPlugin extends sbt.AutoPlugin {
+
   override def trigger: PluginTrigger = noTrigger
 
   override def projectSettings: Seq[Def.Setting[_]] = packagingSettings
@@ -35,7 +37,7 @@ object DockerPlugin extends sbt.AutoPlugin {
   lazy val packagingSettings: Seq[Def.Setting[_]] = Seq[Def.Setting[_]](
     dockerImageName := name.value,
     dockerImageVersion := version.value,
-    dockerContextPath := baseDirectory.value.asPath,
+    dockerContextPath := baseDirectory.value.toPath,
     dockerfileName := "Dockerfile",
     dockerfilePath := dockerContextPath.value.resolve(dockerfileName.value),
     dockerIdUserName := sys.env.get("DOCKER_ID_USER"),

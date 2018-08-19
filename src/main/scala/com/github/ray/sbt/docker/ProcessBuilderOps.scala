@@ -1,11 +1,14 @@
 package com.github.ray.sbt.docker
 
 import scala.sys.process
-import scala.sys.process.ProcessLogger
 
 class ProcessBuilderOps(builder: process.ProcessBuilder){
-  def exec(log: ProcessLogger) = {
-    val exitCode = builder.!(log)
+  def exec(log: sbt.Logger): Unit = {
+    val exitCode = builder.!(new scala.sys.process.ProcessLogger {
+      override def out(s: => String): Unit = log.info(s)
+      override def err(s: => String): Unit = log.error(s)
+      override def buffer[T](f: => T): T = log.buffer(f)
+    })
     if (exitCode != 0) scala.sys.error("Nonzero exit value: " + exitCode)
   }
 }
