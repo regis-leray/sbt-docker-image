@@ -5,8 +5,7 @@ sbt-docker is an sbt plugin that builds and pushes Docker images by using `Docke
 
 Requirements
 ------------
-
-* sbt
+* Sbt
 * Docker
 
 Setup
@@ -19,9 +18,14 @@ addSbtPlugin("com.github.regis-leray" % "sbt-docker" % "0.1.0")
 in your `build.sbt` need to activate manually the plugin for each project
 
 ```scala
-lazy val root = project.in(file("."))
+lazy val root = project.in(file(".")) 
   .enablePlugins(DockerPlugin)
 ```
+
+> Don't forget to export your `DOCKER_ID_USER` as environment variable, do be able to build and push docker image
+> You can override `dockerIdUserName` to provide it
+> 
+> https://docs.docker.com/docker-cloud/builds/push-images/
 
 sbt-docker is an auto plugin, this means that sbt version 0.13.5 or higher is required.
 
@@ -32,19 +36,22 @@ To build an image use the `dockerBuild` task.
 Simply run `sbt dockerBuild` from your prompt or `dockerBuild` in the sbt console.
 
 The Dockerfile should be located at the base directory of you project `./Dockerfile` 
-(override key `dockerContextPath` if necessary) 
-
-By default the docker image is using a tag `projectName:projectVersion` (override key `dockerTag` if necessary)
 
 ```scala
 // Example if you need to override keys
 
 lazy val root = project.in(file("."))
   .settings(
-      dockerTag := "Hello:1.0",
+      //override default dockerIdUserName :: default `sys.env.get("DOCKER_ID_USER")`     
+      dockerIdUserName := "toto",
+      //override default tag  :: default `$dockerIdUserName/$name:$version`
+      dockerTag := "quai.io/mycompany/hello:1.0",     
+      //provide build OPTIONS :: default `Nil`
       dockerBuildOptions := Seq("--no-cache"),
+      //default location of dockerfile :: default `baseDirectory`
       dockerContextPath := baseDirectory.value.asPath,
-      dockerfileName := "Dockerfile"
+      //default name of dockerfile :: default `Dockerfile`
+      dockerfileName := "Dockerfile-custom"
    )
   .enablePlugins(DockerPlugin)
 ```
@@ -53,7 +60,7 @@ lazy val root = project.in(file("."))
 
 An image that have already been built can be pushed with the `dockerPush` task.
 
-To both build and push an image use the `dockerPush` task.
+To push an image use the `dockerPush` task.
 
 By default `dockerPush` will push your docker image build to dockerhub
 
@@ -64,10 +71,18 @@ By default `dockerPush` will push your docker image build to dockerhub
 
 lazy val root = project.in(file("."))
   .settings(
-      dockerPushOptions := Nil, 
-      dockerTag := "Hello:1.0", 
+      //provide push OPTIONS :: default `Nil`
+      dockerPushOptions := Seq("--disable-content-trust"),
+      //override default tag `$dockerIdUserName/$name:$version`
+      dockerTag := "quai.io/mycompany/hello:1.0", 
    )
   .enablePlugins(DockerPlugin)
 ```
 
-> You need to be authenticated by using `docker login -u $USER -p $PASS`, if not you can't push docker images 
+> You need to be authenticated by using `docker login -u $DOCKER_ID_USER`, if not you can't push docker images
+> 
+> https://docs.docker.com/docker-cloud/builds/push-images/
+
+### Building & Pushing an image
+
+To build and push an image use the `dockerBuildAndPush` task.
