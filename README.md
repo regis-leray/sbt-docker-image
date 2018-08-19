@@ -13,7 +13,7 @@ Setup
 
 Add sbt-docker as a dependency in `project/plugins.sbt`:
 ```scala
-addSbtPlugin("com.github.regis-leray" % "sbt-docker" % "0.2.0")
+addSbtPlugin("com.github.regis-leray" % "sbt-docker" % "0.3.0")
 ```
 in your `build.sbt` need to activate manually the plugin for each project
 
