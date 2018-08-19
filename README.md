@@ -42,9 +42,13 @@ The Dockerfile should be located at the base directory of you project `./Dockerf
 
 lazy val root = project.in(file("."))
   .settings(
+      //override default docker image name :: default `$name`
+      dockerImageName := "hello",
+      //override default docker image version :: default `$version`
+      dockerImageVersion := "1.0-RC",
       //override default dockerIdUserName :: default `sys.env.get("DOCKER_ID_USER")`     
       dockerIdUserName := "toto",
-      //override default tag  :: default `$dockerIdUserName/$name:$version`
+      //override default tag  :: default `$dockerIdUserName/$dockerImageName:$dockerImageVersion`
       dockerTag := "quai.io/mycompany/hello:1.0",     
       //provide build OPTIONS :: default `Nil`
       dockerBuildOptions := Seq("--no-cache"),
@@ -55,6 +59,17 @@ lazy val root = project.in(file("."))
    )
   .enablePlugins(DockerPlugin)
 ```
+
+if you need to support `quai.io` (private repo) only override `dockerIdUserName`
+
+```json
+lazy val root = project.in(file(".")) 
+ .settings(dockerIdUserName := "quai.io/mycompany")
+ .enablePlugins(DockerPlugin)
+```
+> How to create and push docker image on `quai.io`
+>
+> https://docs.quay.io/guides/create-repo.html
 
 ### Pushing an image
 
