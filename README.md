@@ -26,6 +26,7 @@ lazy val root = project.in(file("."))
 > You can override `dockerTagNamespace` to provide it
 > 
 > https://docs.docker.com/docker-hub/repos/#searching-for-images
+>
 > https://docs.docker.com/docker-cloud/builds/push-images/
 
 sbt-docker is an auto plugin, this means that sbt version 0.13.5 or higher is required.
