@@ -1,3 +1,7 @@
+v0.4.0
+======
+- no more buffering when logging output from Process
+
 v0.3.0
 ======
 - support sbt cross version
