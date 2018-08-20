@@ -13,18 +13,19 @@ Setup
 
 Add sbt-docker as a dependency in `project/plugins.sbt`:
 ```scala
-addSbtPlugin("com.github.regis-leray" % "sbt-docker" % "0.3.0")
+addSbtPlugin("com.github.regis-leray" % "sbt-docker" % "0.4.0")
 ```
 in your `build.sbt` need to activate manually the plugin for each project
 
 ```scala
-lazy val root = project.in(file(".")) 
+lazy val root = project.in(file("."))
   .enablePlugins(DockerPlugin)
 ```
 
-> Don't forget to export your `DOCKER_ID_USER` as environment variable, to be able to build and push docker image
-> You can override `dockerIdUserName` to provide it
+> Don't forget to export your `DOCKER_ID_USER` or `DOCKER_TAG_NAMESPACE` as environment variable, to be able to build and push docker image
+> You can override `dockerTagNamespace` to provide it
 > 
+> https://docs.docker.com/docker-hub/repos/#searching-for-images
 > https://docs.docker.com/docker-cloud/builds/push-images/
 
 sbt-docker is an auto plugin, this means that sbt version 0.13.5 or higher is required.
@@ -46,9 +47,9 @@ lazy val root = project.in(file("."))
       dockerImageName := "hello",
       //override default docker image version :: default `$version`
       dockerImageVersion := "1.0-RC",
-      //override default dockerIdUserName :: default `sys.env.get("DOCKER_ID_USER")`     
-      dockerIdUserName := "toto",
-      //override default tag  :: default `$dockerIdUserName/$dockerImageName:$dockerImageVersion`
+      //override default dockerTagNamespace :: default `sys.env.get("DOCKER_ID_USER") or sys.env.get("DOCKER_TAG_NAMESPACE")`     
+      dockerTagNamespace := "mycompany",
+      //override default tag  :: default `$dockerTagNamespace/$dockerImageName:$dockerImageVersion`
       dockerTag := "quai.io/mycompany/hello:1.0",     
       //provide build OPTIONS :: default `Nil`
       dockerBuildOptions := Seq("--no-cache"),
@@ -60,11 +61,11 @@ lazy val root = project.in(file("."))
   .enablePlugins(DockerPlugin)
 ```
 
-if you need to support `quai.io` (private repo) only override `dockerIdUserName`
+if you need to support `quai.io` (private repo) only override `dockerTagNamespace`
 
 ```json
 lazy val root = project.in(file(".")) 
- .settings(dockerIdUserName := "quai.io/mycompany")
+ .settings(dockerTagNamespace := Some("quai.io/mycompany"))
  .enablePlugins(DockerPlugin)
 ```
 > How to create and push docker image on `quai.io`

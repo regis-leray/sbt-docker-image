@@ -19,7 +19,7 @@ object DockerPlugin extends sbt.AutoPlugin {
     val dockerPush = taskKey[Unit]("push docker image task")
     val dockerBuildAndPush = taskKey[Unit]("build & push docker image task")
 
-    val dockerIdUserName = settingKey[Option[String]]("docker user name")
+    val dockerTagNamespace = settingKey[Option[String]]("docker tag namespace")
     val dockerImageName = settingKey[String]("docker image name")
     val dockerImageVersion = settingKey[String]("docker image version")
     val dockerContextPath = settingKey[Path]("docker build context path :: docker build PATH")
@@ -40,8 +40,11 @@ object DockerPlugin extends sbt.AutoPlugin {
     dockerContextPath := baseDirectory.value.toPath,
     dockerfileName := "Dockerfile",
     dockerfilePath := dockerContextPath.value.resolve(dockerfileName.value),
-    dockerIdUserName := sys.env.get("DOCKER_ID_USER"),
-    dockerTag := dockerIdUserName.value.fold(sys.error("Please provide setting key `dockerIdUserName`"))(v => s"$v/${dockerImageName.value}:${dockerImageVersion.value}"),
+    dockerTagNamespace := sys.env.get("DOCKER_ID_USER").orElse(sys.env.get("DOCKER_TAG_NAMESPACE")),
+    dockerTag := {
+      val ns = dockerTagNamespace.value.map(_+"/").getOrElse("")
+      s"$ns${dockerImageName.value}:${dockerImageVersion.value}"
+    },
     dockerBuildOptions := Nil,
     dockerBuildCmd := {
       val contextPath = dockerContextPath.value

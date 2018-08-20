@@ -2,7 +2,7 @@
 version := "0.1"
 name := "my-name"
 enablePlugins(DockerPlugin)
-dockerIdUserName := Some("toto")
+dockerTagNamespace := Some("toto")
 
 TaskKey[Unit]("checkBuildCmd") := {
   if (dockerBuildCmd.value.startsWith("docker build -t toto/my-name:0.1 -f") == false) sys.error("unexpected docker build with tag")

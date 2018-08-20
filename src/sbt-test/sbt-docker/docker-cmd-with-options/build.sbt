@@ -1,8 +1,9 @@
+
 version := "0.1"
 name := "my-name"
 enablePlugins(DockerPlugin)
 
-dockerIdUserName := Some("toto")
+dockerTagNamespace := Some("toto")
 dockerBuildOptions := Seq("--target mytarget")
 dockerPushOptions := Seq("--disable-content-trust")
 
