@@ -1,3 +1,7 @@
+v0.5.0
+======
+- add docker options possibility [#14](https://github.com/regis-leray/sbt-docker/issues/14)
+
 v0.4.0
 ======
 - tag namespace are not mandatory anymore - rename `dockerIdUsername` to `dockerTagNamespace`

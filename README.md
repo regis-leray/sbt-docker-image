@@ -2,6 +2,9 @@
 
 sbt-docker is an sbt plugin that builds and pushes Docker images by using `Dockerfile`.
 
+[![CircleCI](https://circleci.com/gh/regis-leray/sbt-docker/tree/master.svg?style=svg)](https://circleci.com/gh/regis-leray/sbt-docker/tree/master)
+[![codecov](https://codecov.io/gh/regis-leray/sbt-docker/branch/master/graph/badge.svg)](https://codecov.io/gh/regis-leray/sbt-docker)
+
 
 Requirements
 ------------
