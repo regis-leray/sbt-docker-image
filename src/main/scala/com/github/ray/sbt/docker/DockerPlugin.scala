@@ -24,6 +24,7 @@ object DockerPlugin extends sbt.AutoPlugin {
     val dockerImageVersion = settingKey[String]("docker image version")
     val dockerContextPath = settingKey[Path]("docker build context path :: docker build PATH")
     val dockerTag = settingKey[String]("docker tag")
+    val dockerOptions = taskKey[Seq[String]]("docker options arguments :: docker [OPTIONS] COMMAND [ARG...]")
     val dockerfileName = settingKey[String]("docker build file name :: docker build -f")
     val dockerfilePath = settingKey[Path]("docker file path")
     val dockerBuildOptions = taskKey[Seq[String]]("docker build options arguments :: docker build [OPTIONS]")
@@ -45,14 +46,15 @@ object DockerPlugin extends sbt.AutoPlugin {
       val ns = dockerTagNamespace.value.map(_+"/").getOrElse("")
       s"$ns${dockerImageName.value}:${dockerImageVersion.value}"
     },
+    dockerOptions := Nil,
     dockerBuildOptions := Nil,
     dockerBuildCmd := {
       val contextPath = dockerContextPath.value
       val dockerfilePath: Path = contextPath.resolve(dockerfileName.value)
-      (Seq("docker build") ++ dockerBuildOptions.value ++ Seq(s"-t ${dockerTag.value}", s"-f ${dockerfilePath.toString} ${contextPath.toString}")).mkString(" ")
+      (Seq("docker") ++ dockerOptions.value ++ Seq("build") ++ dockerBuildOptions.value ++ Seq(s"-t ${dockerTag.value}", s"-f ${dockerfilePath.toString} ${contextPath.toString}")).mkString(" ")
     },
     dockerPushOptions := Nil,
-    dockerPushCmd := (Seq("docker push") ++ dockerPushOptions.value ++ Seq(dockerTag.value)).mkString(" "),
+    dockerPushCmd := (Seq("docker") ++ dockerOptions.value ++ Seq("push") ++ dockerPushOptions.value ++ Seq(dockerTag.value)).mkString(" "),
 
     dockerBuild := {
       val log = streams.value.log
