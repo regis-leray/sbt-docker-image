@@ -1,3 +1,4 @@
 # check if the scala compiler is set to 2.12.6
 > checkBuildCmd
 > checkPushCmd
+> checkTagCmd

@@ -17,6 +17,8 @@ object DockerPlugin extends sbt.AutoPlugin {
   object autoImport {
     val dockerBuild = taskKey[Unit]("build docker image task")
     val dockerPush = taskKey[Unit]("push docker image task")
+    val dockerTag = taskKey[Unit]("tag docker image task")
+
     val dockerBuildAndPush = taskKey[Unit]("build & push docker image task")
 
     val dockerfileName = settingKey[String]("docker build file name :: docker build -f")
@@ -32,6 +34,9 @@ object DockerPlugin extends sbt.AutoPlugin {
     val dockerPushTags = settingKey[Seq[String]]("docker push name/tag arguments :: docker push NAME[:TAG]")
     val dockerPushOptions = settingKey[Seq[String]]("docker push options arguments :: docker push [OPTIONS]")
     val dockerPushCmd = settingKey[Seq[String]]("do not override")
+
+    val dockerTagTargetImage = settingKey[Seq[String]]("docker target image")
+    val dockerTagCmd = settingKey[Seq[String]]("do not override")
   }
 
   import autoImport._
@@ -81,6 +86,24 @@ object DockerPlugin extends sbt.AutoPlugin {
     dockerBuildAndPush := {
       dockerBuild.value
       dockerPush.value
+    },
+
+    dockerTagTargetImage := Nil,
+    dockerTagCmd := {
+      val sourceTag = dockerTagNames.value.headOption.getOrElse("`dockerTagNames property is empty`")
+      dockerTagTargetImage.value.map(targetTag => (Seq("docker") ++ dockerOptions.value ++ Seq("tag") ++ Seq(sourceTag, targetTag)).mkString(" "))
+    },
+    dockerTag := {
+      val log = streams.value.log
+
+      if(dockerTagTargetImage.value.isEmpty){
+        sys.error("Need to override `dockerTagTargetImage`")
+      }
+
+      dockerTagCmd.value.foreach{cmd =>
+        log.info(s"Tag docker image :: $cmd")
+        Process(cmd).exec(log)
+      }
     }
   )
 }
