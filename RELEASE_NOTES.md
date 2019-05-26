@@ -1,3 +1,7 @@
+v0.6.0
+======
+- support docker build with multiple tags (build -t <tag1> -t <tag2>) 
+
 v0.5.0
 ======
 - add docker options possibility [#14](https://github.com/regis-leray/sbt-docker/issues/14)

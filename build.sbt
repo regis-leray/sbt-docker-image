@@ -4,8 +4,6 @@ import sbt.ScriptedPlugin.autoImport.scriptedLaunchOpts
 // Release
 import ReleaseTransformations._
 
-def getEnv(name: String) = sys.env.get(name).filter(_.nonEmpty).getOrElse(s"$name is not defined in your environment properties")
-
 lazy val `sbt-docker` = project
   .in(file("."))
   .settings(
@@ -13,7 +11,6 @@ lazy val `sbt-docker` = project
     name := "sbt-docker",
     description := "sbt docker file plugin",
     sbtPlugin := true,
-
     crossSbtVersions := Vector("1.1.6", "0.13.18"),
     releaseCrossBuild := true,
 
@@ -31,8 +28,7 @@ lazy val `sbt-docker` = project
     javacOptions in(Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8"),
     javacOptions in(Compile, doc) := Seq("-source", "1.8"),
 
-    credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", getEnv("SONATYPE_USERNAME"), getEnv("SONATYPE_PASSWORD")),
-    credentials += Credentials(Path.userHome / ".sbt" / ".sonatype_credentials"),
+    credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential"),
 
     publishTo := {
       if (isSnapshot.value)
