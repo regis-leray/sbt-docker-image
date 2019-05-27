@@ -1,11 +1,12 @@
 v0.6.0
 ======
 - support `docker build` with multiple tags (build -t <tag1> -t <tag2>) 
-- support `docker tag` [#15](https://github.com/regis-leray/sbt-docker/issues/15)
+- support `docker image tag` [#15](https://github.com/regis-leray/sbt-docker/issues/15)
+- support `docker image rm` [#16](https://github.com/regis-leray/sbt-docker/issues/16)
 
 v0.5.0
 ======
-- add docker options possibility [#14](https://github.com/regis-leray/sbt-docker/issues/14)
+- add docker options for all commands [#14](https://github.com/regis-leray/sbt-docker/issues/14)
 
 v0.4.0
 ======

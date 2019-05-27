@@ -1,6 +1,6 @@
 # sbt-docker
 
-sbt-docker is a thin wrapper over docker cli, provide commands to builds and pushes Docker images.
+sbt-docker is a thin wrapper over docker cli, for managing docker image 
 
 [![CircleCI](https://circleci.com/gh/regis-leray/sbt-docker/tree/master.svg?style=svg)](https://circleci.com/gh/regis-leray/sbt-docker/tree/master)
 [![codecov](https://codecov.io/gh/regis-leray/sbt-docker/branch/master/graph/badge.svg)](https://codecov.io/gh/regis-leray/sbt-docker)
@@ -31,8 +31,10 @@ the only dependency is on docker cli, need to be available in your PATH follow i
 Docker command
 --------------
 
-* docker [OPTIONS] push [ARGS]
-* docker [OPTIONS] build [ARGS]
+* docker [OPTIONS] image push [ARGS]
+* docker [OPTIONS] image build [ARGS]
+* docker [OPTIONS] image tag [ARGS]
+* docker [OPTIONS] image rm [ARGS]
 
 
 At any time you can provide docker [OPTIONS] by overriding `dockerOptions` property
@@ -85,6 +87,45 @@ lazy val root = project.in(file("."))
 ```
 
 More informations here for the build [options](https://docs.docker.com/engine/reference/commandline/build/)
+
+### Tag an image
+
+Tag an existing docker image with the `dockerTag` task.
+
+As source tag name we are using `dockerTagNames.head`
+
+It is required to override `dockerTagTargetImages` to provide docker target tag name,
+
+```scala
+// Example if you need to override keys
+
+lazy val root = project.in(file("."))
+  .settings(
+      //provide push OPTIONS :: default `Nil`
+      dockerTagTargetImages := Seq("org.me/hello:latest")
+   )
+  .enablePlugins(DockerPlugin)
+```
+
+### Remove an image
+
+Remove a docker image from local registry with the `dockerRmi` task.
+By default we are removing all the build images define by the property `dockerTagNames` but you can override them with `dockerRmiImages`
+
+
+```scala
+// Example if you need to override keys
+
+lazy val root = project.in(file("."))
+  .settings(
+      //provide push OPTIONS :: default `Nil`
+      dockerRmiOptions := Seq("--no-prune"),
+      //default value `dockerTagNames`
+      dockerRmiImages := Seq("org.me/hello:1.0")
+   )
+  .enablePlugins(DockerPlugin)
+```
+
 
 ### Pushing an image
 

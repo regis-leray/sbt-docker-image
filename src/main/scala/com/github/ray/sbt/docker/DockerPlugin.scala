@@ -15,9 +15,10 @@ object DockerPlugin extends sbt.AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = packagingSettings
 
   object autoImport {
-    val dockerBuild = taskKey[Unit]("build docker image task")
-    val dockerPush = taskKey[Unit]("push docker image task")
-    val dockerTag = taskKey[Unit]("tag docker image task")
+    val dockerBuild = taskKey[Unit]("docker image build")
+    val dockerPush = taskKey[Unit]("docker image push")
+    val dockerTag = taskKey[Unit]("docker image tag")
+    val dockerRmi = taskKey[Unit]("docker image rm")
 
     val dockerBuildAndPush = taskKey[Unit]("build & push docker image task")
 
@@ -35,8 +36,12 @@ object DockerPlugin extends sbt.AutoPlugin {
     val dockerPushOptions = settingKey[Seq[String]]("docker push options arguments :: docker push [OPTIONS]")
     val dockerPushCmd = settingKey[Seq[String]]("do not override")
 
-    val dockerTagTargetImage = settingKey[Seq[String]]("docker target image")
+    val dockerTagTargetImages = settingKey[Seq[String]]("docker tag target images")
     val dockerTagCmd = settingKey[Seq[String]]("do not override")
+
+    val dockerRmiOptions = settingKey[Seq[String]]("docker rmi options arguments :: docker rmi [OPTIONS]")
+    val dockerRmiImages = settingKey[Seq[String]]("docker rmi images :: docker rmi IMAGE [IMAGE...]")
+    val dockerRmiCmd = settingKey[String]("do not override")
   }
 
   import autoImport._
@@ -56,7 +61,7 @@ object DockerPlugin extends sbt.AutoPlugin {
     dockerBuildCmd := {
       val contextPath = dockerBuildContextPath.value
       val dockerfileFullPath = contextPath.resolve(dockerfileName.value)
-      (Seq("docker") ++ dockerOptions.value ++ Seq("build") ++ dockerBuildOptions.value ++ dockerBuildTags.value.map(t => s"-t $t") ++ Seq(s"-f ${dockerfileFullPath.toString} ${contextPath.toString}")).mkString(" ")
+      (Seq("docker") ++ dockerOptions.value ++ Seq("image build") ++ dockerBuildOptions.value ++ dockerBuildTags.value.map(t => s"-t $t") ++ Seq(s"-f ${dockerfileFullPath.toString} ${contextPath.toString}")).mkString(" ")
     },
     dockerBuild := {
       val log = streams.value.log
@@ -64,7 +69,7 @@ object DockerPlugin extends sbt.AutoPlugin {
       val cmd = dockerBuildCmd.value
 
       if (Files.exists(dockerFile)) {
-        log.info(s"Build docker image :: $cmd")
+        log.info(s"docker execute: $cmd")
         Process(cmd).exec(log)
       } else {
         sys.error(s"Docker file not found: ${dockerFile.toString}")
@@ -73,12 +78,12 @@ object DockerPlugin extends sbt.AutoPlugin {
 
     dockerPushTags := dockerTagNames.value,
     dockerPushOptions := Nil,
-    dockerPushCmd := dockerPushTags.value.map(tag => (Seq("docker") ++ dockerOptions.value ++ Seq("push") ++ dockerPushOptions.value ++ Seq(tag)).mkString(" ")),
+    dockerPushCmd := dockerPushTags.value.map(tag => (Seq("docker") ++ dockerOptions.value ++ Seq("image push") ++ dockerPushOptions.value ++ Seq(tag)).mkString(" ")),
     dockerPush := {
       val log = streams.value.log
 
       dockerPushCmd.value.foreach{cmd =>
-        log.info(s"Push docker image :: $cmd")
+        log.info(s"docker execute: $cmd")
         Process(cmd).exec(log)
       }
     },
@@ -88,22 +93,33 @@ object DockerPlugin extends sbt.AutoPlugin {
       dockerPush.value
     },
 
-    dockerTagTargetImage := Nil,
+    dockerTagTargetImages := Nil,
     dockerTagCmd := {
       val sourceTag = dockerTagNames.value.headOption.getOrElse("`dockerTagNames property is empty`")
-      dockerTagTargetImage.value.map(targetTag => (Seq("docker") ++ dockerOptions.value ++ Seq("tag") ++ Seq(sourceTag, targetTag)).mkString(" "))
+      dockerTagTargetImages.value.map(targetTag => (Seq("docker") ++ dockerOptions.value ++ Seq("image tag") ++ Seq(sourceTag, targetTag)).mkString(" "))
     },
     dockerTag := {
       val log = streams.value.log
 
-      if(dockerTagTargetImage.value.isEmpty){
-        sys.error("Need to override `dockerTagTargetImage`")
+      if(dockerTagTargetImages.value.isEmpty){
+        sys.error("Need to override `dockerTagTargetImages`")
       }
 
       dockerTagCmd.value.foreach{cmd =>
-        log.info(s"Tag docker image :: $cmd")
+        log.info(s"docker execute: $cmd")
         Process(cmd).exec(log)
       }
+    },
+
+    dockerRmiOptions := Nil,
+    dockerRmiImages := dockerTagNames.value,
+
+    dockerRmiCmd := (Seq("docker") ++ dockerOptions.value ++ Seq("image rm") ++ dockerRmiOptions.value ++ dockerRmiImages.value).mkString(" "),
+    dockerRmi := {
+      val log = streams.value.log
+      val cmd = dockerRmiCmd.value
+      log.info(s"docker execute: $cmd")
+      Process(cmd).exec(log)
     }
   )
 }

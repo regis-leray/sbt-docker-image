@@ -4,12 +4,12 @@ import sbt.ScriptedPlugin.autoImport.scriptedLaunchOpts
 // Release
 import ReleaseTransformations._
 
-lazy val `sbt-docker` = project
+lazy val `sbt-docker-image` = project
   .in(file("."))
   .settings(
     organization := "com.github.regis-leray",
     name := "sbt-docker",
-    description := "sbt docker file plugin",
+    description := "sbt docker image plugin",
     sbtPlugin := true,
     crossSbtVersions := Vector("1.1.6", "0.13.18"),
     releaseCrossBuild := true,
@@ -28,7 +28,7 @@ lazy val `sbt-docker` = project
     javacOptions in(Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8"),
     javacOptions in(Compile, doc) := Seq("-source", "1.8"),
 
-    credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential"),
+    credentials += Credentials( Path.userHome / ".sbt" / "sonatype_credential" ),
 
     publishTo := {
       if (isSnapshot.value)

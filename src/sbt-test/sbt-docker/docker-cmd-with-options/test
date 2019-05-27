@@ -2,3 +2,4 @@
 > checkDockerBuildWithOptions
 > checkDockerPushWithOptions
 > checkTagCmdWithOptions
+> checkRmiCmdWithOptions
