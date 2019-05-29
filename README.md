@@ -2,8 +2,8 @@
 
 sbt-docker is a thin wrapper over docker cli, for managing docker image 
 
-[![CircleCI](https://circleci.com/gh/regis-leray/sbt-docker/tree/master.svg?style=svg)](https://circleci.com/gh/regis-leray/sbt-docker/tree/master)
-[![codecov](https://codecov.io/gh/regis-leray/sbt-docker/branch/master/graph/badge.svg)](https://codecov.io/gh/regis-leray/sbt-docker)
+[![CircleCI](https://circleci.com/gh/regis-leray/sbt-docker-image/tree/master.svg?style=svg)](https://circleci.com/gh/regis-leray/sbt-docker/tree/master)
+[![codecov](https://codecov.io/gh/regis-leray/sbt-docker-image/branch/master/graph/badge.svg)](https://codecov.io/gh/regis-leray/sbt-docker)
 
 
 Requirements
@@ -16,13 +16,13 @@ Setup
 
 Add sbt-docker as a dependency in `project/plugins.sbt`:
 ```scala
-addSbtPlugin("com.github.regis-leray" % "sbt-docker" % "0.6.0")
+addSbtPlugin("com.github.regis-leray" % "sbt-docker-image" % "0.7.0")
 ```
 in your `build.sbt` need to activate manually the plugin for each project
 
 ```scala
 lazy val root = project.in(file("."))
-  .enablePlugins(DockerPlugin)
+  .enablePlugins(DockerImagePlugin)
 ```
 
 sbt-docker is an auto plugin, this means that sbt version 0.13.5 or higher is required.
@@ -42,9 +42,7 @@ At any time you can provide docker [OPTIONS] by overriding `dockerOptions` prope
 
 ### Build an image
 
-To build an image use the `dockerBuild` task 
-
-Simply run `sbt dockerBuild` from your prompt or `dockerBuild` in the sbt console.
+Simply run `sbt dockerImg:build` from your prompt or `dockerImg:build` in the sbt console.
 
 The Dockerfile should be located at the base directory of you project `./Dockerfile` 
 
@@ -55,46 +53,37 @@ The Dockerfile should be located at the base directory of you project `./Dockerf
 lazy val root = project.in(file("."))
   .settings(   
       //override default tag  :: default `${organization.value}/${name.value}:${version.value}`
-      dockerTagNames := Seq("org.me/hello:1.0"),
+      tagNames in DockerImg := Seq("org.me/hello:1.0"),
       //default name of dockerfile :: default `Dockerfile`
-      dockerfileName := "Dockerfile-custom"
+      dockerfileName in DockerImg := "Dockerfile-custom"
       //provide OPTIONS :: default `Nil`
-      dockerOptions := Seq("--tlsverify ")     
+      dockerOptions in DockerImg := Seq("--tlsverify ")     
       //provide build OPTIONS :: default `Nil`
-      dockerBuildOptions := Seq("--no-cache"),
+      dockerCmdOptions in DockerImg in build := Seq("--no-cache"),
       //default location of dockerfile :: default `baseDirectory`
-      dockerBuildContextPath := baseDirectory.value.asPath.resolve("docker-dir"),      
+      buildContextPath in DockerImg in build := baseDirectory.value.asPath.resolve("docker-dir"),      
    )
-  .enablePlugins(DockerPlugin)
+  .enablePlugins(DockerImagePlugin)
 ```
-
-if you need to support private(google cloud / quai.io) repo only override `dockerTagNames`
-
-```scala
-lazy val root = project.in(file(".")) 
- .settings(dockerTagNames := Seq(s"quai.io/${name.value}:${version.value}"))
- .enablePlugins(DockerPlugin)
-```
-
 
 By default we are tagging the builded image (`build -t`) by using `$organization/$name:$version` as default docker image tag name, 
-you can override, or add multiple tags by overriding `dockerBuildTags` or only override tag versions
+you can override, or add multiple tags by overriding `tagNames`
 
 ```scala
 lazy val root = project.in(file(".")) 
- .settings(dockerTagNames += s"quai.io/${name.value}:latest")
- .enablePlugins(DockerPlugin)
+ .settings(tagNames in DockerImg in build += s"quai.io/${name.value}:latest")
+ .enablePlugins(DockerImagePlugin)
 ```
 
 More informations here for the build [options](https://docs.docker.com/engine/reference/commandline/build/)
 
 ### Tag an image
 
-Tag an existing docker image with the `dockerTag` task.
+Tag an existing docker image with the `dockerImg:tag` task.
 
 As source tag name we are using `dockerTagNames.head`
 
-It is required to override `dockerTagTargetImages` to provide docker target tag name,
+It is required to override `dockerTargetImages` to provide docker target tag name,
 
 ```scala
 // Example if you need to override keys
@@ -102,15 +91,15 @@ It is required to override `dockerTagTargetImages` to provide docker target tag 
 lazy val root = project.in(file("."))
   .settings(
       //provide push OPTIONS :: default `Nil`
-      dockerTagTargetImages := Seq("org.me/hello:latest")
+      targetImages in DockerImg in tag := Seq("org.me/hello:latest")
    )
-  .enablePlugins(DockerPlugin)
+  .enablePlugins(DockerImagePlugin)
 ```
 
 ### Remove an image
 
-Remove a docker image from local registry with the `dockerRmi` task.
-By default we are removing all the build images define by the property `dockerTagNames` but you can override them with `dockerRmiImages`
+Remove a docker image from local registry with the `dockerImg:rm` task.
+By default we are removing all the build images define by the property `dockerTagNames` but you can override them with `dockerRmImages`
 
 
 ```scala
@@ -118,22 +107,20 @@ By default we are removing all the build images define by the property `dockerTa
 
 lazy val root = project.in(file("."))
   .settings(
-      //provide push OPTIONS :: default `Nil`
-      dockerRmiOptions := Seq("--no-prune"),
+      //provide rm OPTIONS :: default `Nil`
+      cmdOptions in DockerImg in rm := Seq("--no-prune"),
       //default value `dockerTagNames`
-      dockerRmiImages := Seq("org.me/hello:1.0")
+      tagNames in DockerImg in rm := Seq("org.me/hello:1.0")
    )
-  .enablePlugins(DockerPlugin)
+  .enablePlugins(DockerImagePlugin)
 ```
 
 
 ### Pushing an image
 
-An image that have already been built can be pushed with the `dockerPush` task.
+An image that have already been built can be pushed with the `dockerImg:push` task.
 
-To push an image use the `dockerPush` task.
-
-By default `dockerPush` will push your docker image tags define by the `dockerBuildTags` property but you can still override
+By default `dockerImage:push` will push your docker image tags define by the `dockerBuildTags` property but you can still override
 
 `dockerBuildTags` key is used to determine which image names to push
 
@@ -143,18 +130,14 @@ By default `dockerPush` will push your docker image tags define by the `dockerBu
 lazy val root = project.in(file("."))
   .settings(
       //provide push OPTIONS :: default `Nil`
-      dockerPushOptions := Seq("--disable-content-trust")
+      dockerCmdOptions in DockerImg in push := Seq("--disable-content-trust")
    )
-  .enablePlugins(DockerPlugin)
+  .enablePlugins(DockerImagePlugin)
 ```
 
-With docker push you can override only `dockerPushTags`, if you need to have more control 
+With `docker push` you can specify which image to push by overriding settings `tagNames in DockerImg in push`, it will only apply this settings for the task `push`
 
 
 > You need to be authenticated by using `docker login -u $DOCKER_ID_USER`, if not you can't push docker images
 > 
 > https://docs.docker.com/docker-cloud/builds/push-images/
-
-### Building & Pushing an image
-
-To build and push an image use the `dockerBuildAndPush` task.

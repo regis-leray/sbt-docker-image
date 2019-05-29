@@ -1,0 +1,2 @@
+# check if fail when no dockerfile
+-> dockerImg:build
