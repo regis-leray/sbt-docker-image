@@ -46,7 +46,6 @@ lazy val `sbt-docker-image` = project
       inquireVersions,
       runClean,
       releaseStepCommandAndRemaining("^ compile"),
-      releaseStepCommandAndRemaining("^ scripted"),
       setReleaseVersion,
       commitReleaseVersion,
       tagRelease,
