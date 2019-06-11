@@ -15,7 +15,7 @@ jobs:
           keys:
             - sbt-cache-{{ checksum "build.sbt" }}
 
-      - run: sbt clean coverage scripted coverageReport coverageAggregate exit
+      - run: sbt ";clean;coverage;^ scripted;coverageReport;coverageAggregate;exit"
 
       - save_cache:
           key: sbt-cache-{{ checksum "build.sbt" }}

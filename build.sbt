@@ -14,6 +14,8 @@ lazy val `sbt-docker-image` = project
     crossSbtVersions := Vector("1.1.6", "0.13.18"),
     releaseCrossBuild := true,
 
+    coverageHighlighting := false,
+
     homepage := Some(url("https://github.com/regis-leray/sbt-docker-image")),
     scmInfo := Some(ScmInfo(url("https://github.com/regis-leray/sbt-docker-image"), "git@github.com:regis-leray/sbt-docker-image.git")),
     developers := List(Developer("username", "Regis Leray", "regis.leray at gmail dot com", url("https://github.com/regis-leray"))),
