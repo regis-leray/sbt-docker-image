@@ -3,7 +3,7 @@
 sbt-docker is a thin wrapper over docker cli, for managing docker image 
 
 [![CircleCI](https://circleci.com/gh/regis-leray/sbt-docker-image/tree/master.svg?style=svg)](https://circleci.com/gh/regis-leray/sbt-docker/tree/master)
-[![codecov](https://codecov.io/gh/regis-leray/sbt-docker-image/branch/master/graph/badge.svg)](https://codecov.io/gh/regis-leray/sbt-docker)
+[![codecov](https://codecov.io/gh/regis-leray/sbt-docker-image/branch/master/graph/badge.svg)](https://codecov.io/gh/regis-leray/sbt-docker-image)
 
 
 Requirements
@@ -35,7 +35,6 @@ Docker command
 * docker [OPTIONS] image build [ARGS]
 * docker [OPTIONS] image tag [ARGS]
 * docker [OPTIONS] image rm [ARGS]
-
 
 At any time you can provide docker [OPTIONS] by overriding `dockerOptions` property
 
@@ -81,9 +80,9 @@ More informations here for the build [options](https://docs.docker.com/engine/re
 
 Tag an existing docker image with the `dockerImg:tag` task.
 
-As source tag name we are using `dockerTagNames.head`
+As source tag name we are using `tagNames.head`
 
-It is required to override `dockerTargetImages` to provide docker target tag name,
+It is required to override `targetImages` to provide docker target tag name,
 
 ```scala
 // Example if you need to override keys
@@ -99,7 +98,7 @@ lazy val root = project.in(file("."))
 ### Remove an image
 
 Remove a docker image from local registry with the `dockerImg:rm` task.
-By default we are removing all the build images define by the property `dockerTagNames` but you can override them with `dockerRmImages`
+By default we are removing all the build images define by the property `tagNames`
 
 
 ```scala
@@ -120,9 +119,9 @@ lazy val root = project.in(file("."))
 
 An image that have already been built can be pushed with the `dockerImg:push` task.
 
-By default `dockerImage:push` will push your docker image tags define by the `dockerBuildTags` property but you can still override
+By default `dockerImg:push` will push your docker image tags define by the `tagNames` property but you can still override
 
-`dockerBuildTags` key is used to determine which image names to push
+`tagNames` key is used to determine which image names to push
 
 ```scala
 // Example if you need to override keys
@@ -130,7 +129,8 @@ By default `dockerImage:push` will push your docker image tags define by the `do
 lazy val root = project.in(file("."))
   .settings(
       //provide push OPTIONS :: default `Nil`
-      dockerCmdOptions in DockerImg in push := Seq("--disable-content-trust")
+      cmdOptions in DockerImg in push := Seq("--disable-content-trust"),
+      tagNames in DockerImg in push := Seq("org.me/hello:1.0")
    )
   .enablePlugins(DockerImagePlugin)
 ```
