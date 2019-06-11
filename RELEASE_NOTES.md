@@ -1,3 +1,16 @@
+v0.7.0
+======
+
+- rename DockerPlugin as DockerImagePlugin
+- rename tasks
+ 
+dockerBuild => dockerImgBuild
+dockerPush => dockerImgPush
+dockerRmi => dockerImgRm
+dockerTag => dockerImgTag
+
+- delete duplicate settings, and provide scope for dockerOptions and dockerCmdOptions 
+
 v0.6.0
 ======
 - support `docker build` with multiple tags (build -t <tag1> -t <tag2>) 

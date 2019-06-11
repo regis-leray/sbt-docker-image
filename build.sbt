@@ -8,14 +8,14 @@ lazy val `sbt-docker-image` = project
   .in(file("."))
   .settings(
     organization := "com.github.regis-leray",
-    name := "sbt-docker",
+    name := "sbt-docker-image",
     description := "sbt docker image plugin",
     sbtPlugin := true,
     crossSbtVersions := Vector("1.1.6", "0.13.18"),
     releaseCrossBuild := true,
 
-    homepage := Some(url("https://github.com/regis-leray/sbt-docker")),
-    scmInfo := Some(ScmInfo(url("https://github.com/regis-leray/sbt-docker"), "git@github.com:regis-leray/sbt-docker.git")),
+    homepage := Some(url("https://github.com/regis-leray/sbt-docker-image")),
+    scmInfo := Some(ScmInfo(url("https://github.com/regis-leray/sbt-docker-image"), "git@github.com:regis-leray/sbt-docker-image.git")),
     developers := List(Developer("username", "Regis Leray", "regis.leray at gmail dot com", url("https://github.com/regis-leray"))),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
 
