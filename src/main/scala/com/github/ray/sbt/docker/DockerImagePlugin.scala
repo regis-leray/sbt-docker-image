@@ -49,9 +49,9 @@ object DockerImagePlugin extends sbt.AutoPlugin {
       val log = streams.value.log
       val dockerFile = dockerfilePath.value
 
-      val contextPath = (build / buildContextPath).value
+      val contextPath = (buildContextPath in build).value
       val dockerfileFullPath = contextPath.resolve(dockerfileName.value)
-      val cmd = (Seq("docker") ++ (build / dockerOptions).value ++ Seq("image build") ++ (build / cmdOptions).value ++ (build / tagNames).value.map(t => s"-t $t") ++ Seq(s"-f ${dockerfileFullPath.toString} ${contextPath.toString}")).mkString(" ")
+      val cmd = (Seq("docker") ++ (dockerOptions in build).value ++ Seq("image build") ++ (cmdOptions in build).value ++ (tagNames in build).value.map(t => s"-t $t") ++ Seq(s"-f ${dockerfileFullPath.toString} ${contextPath.toString}")).mkString(" ")
 
       if (Files.exists(dockerFile)) {
         log.info(s"docker execute: $cmd")
@@ -64,8 +64,8 @@ object DockerImagePlugin extends sbt.AutoPlugin {
     push in DockerImg := {
       val log = streams.value.log
 
-      (push / tagNames).value
-        .map(tag => (Seq("docker") ++ (push / dockerOptions).value ++ Seq("image push") ++ (push / cmdOptions).value ++ Seq(tag)).mkString(" "))
+      (tagNames in push).value
+        .map(tag => (Seq("docker") ++ (dockerOptions in push).value ++ Seq("image push") ++ (cmdOptions in push).value ++ Seq(tag)).mkString(" "))
         .foreach { cmd =>
           log.info(s"docker execute: $cmd")
           Process(cmd).exec(log)
@@ -76,10 +76,10 @@ object DockerImagePlugin extends sbt.AutoPlugin {
 
     tag in DockerImg := {
       val log = streams.value.log
-      val sourceTag = (tag / tagNames).value.headOption.getOrElse(sys.error("dockerTagNames property is empty"))
+      val sourceTag = (tagNames in tag).value.headOption.getOrElse(sys.error("dockerTagNames property is empty"))
 
-      (tag / targetImages).value
-        .map(targetTag => (Seq("docker") ++ (tag / dockerOptions).value ++ Seq("image tag") ++ Seq(sourceTag, targetTag)).mkString(" "))
+      (targetImages in tag).value
+        .map(targetTag => (Seq("docker") ++ (dockerOptions in tag).value ++ Seq("image tag") ++ Seq(sourceTag, targetTag)).mkString(" "))
         .foreach { cmd =>
           log.info(s"docker execute: $cmd")
           Process(cmd).exec(log)
@@ -88,7 +88,7 @@ object DockerImagePlugin extends sbt.AutoPlugin {
 
     rm in DockerImg := {
       val log = streams.value.log
-      val cmd = (Seq("docker") ++ (rm / dockerOptions).value ++ Seq("image rm") ++ (rm / cmdOptions).value ++ tagNames.value).mkString(" ")
+      val cmd = (Seq("docker") ++ (dockerOptions in rm).value ++ Seq("image rm") ++ (cmdOptions in rm).value ++ tagNames.value).mkString(" ")
       log.info(s"docker execute: $cmd")
       Process(cmd).exec(log)
     }
