@@ -1,4 +1,4 @@
-# sbt-docker
+# sbt-docker-image
 
 sbt-docker is a thin wrapper over docker cli, for managing docker image 
 
