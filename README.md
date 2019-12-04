@@ -1,6 +1,6 @@
 # sbt-docker-image
 
-sbt-docker is a thin wrapper over docker cli, for managing docker image 
+sbt-docker-image is a thin wrapper over docker cli, for managing docker images
 
 [![CircleCI](https://circleci.com/gh/regis-leray/sbt-docker-image/tree/master.svg?style=svg)](https://circleci.com/gh/regis-leray/sbt-docker/tree/master)
 [![codecov](https://codecov.io/gh/regis-leray/sbt-docker-image/branch/master/graph/badge.svg)](https://codecov.io/gh/regis-leray/sbt-docker-image)
@@ -8,7 +8,7 @@ sbt-docker is a thin wrapper over docker cli, for managing docker image
 
 Requirements
 ------------
-* Sbt 
+* Sbt (0.13.x or above)
 * Docker Cli
 
 Setup
@@ -16,7 +16,7 @@ Setup
 
 Add sbt-docker as a dependency in `project/plugins.sbt`:
 ```scala
-addSbtPlugin("com.github.regis-leray" % "sbt-docker-image" % "0.7.1")
+addSbtPlugin("com.github.regis-leray" % "sbt-docker-image" % "0.7.2")
 ```
 in your `build.sbt` need to activate manually the plugin for each project
 
