@@ -6,12 +6,13 @@ import ReleaseTransformations._
 
 lazy val `sbt-docker-image` = project
   .in(file("."))
+  .enablePlugins(SbtPlugin)
   .settings(
     organization := "com.github.regis-leray",
     name := "sbt-docker-image",
     description := "sbt docker image plugin",
     sbtPlugin := true,
-    crossSbtVersions := Vector("1.1.6", "0.13.18"),
+    crossSbtVersions := Vector("1.2.8", "0.13.18"),
     releaseCrossBuild := true,
 
     coverageHighlighting := false,
@@ -55,12 +56,13 @@ lazy val `sbt-docker-image` = project
       releaseStepCommand("^ sonatypeReleaseAll"),
       pushChanges
     ),
-
-
-    scriptedLaunchOpts := {
-      scriptedLaunchOpts.value ++
+  
+    scriptedLaunchOpts := { scriptedLaunchOpts.value ++
         Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
+
     scriptedBufferLog := false
   )
-  .settings(libraryDependencies += scalaTest % Test)
+  .settings(
+    libraryDependencies += scalaTest % Test    
+  )
